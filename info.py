@@ -18,9 +18,7 @@ def detail():
         gender = st.selectbox("Gender *", ["Male", "Female"], index=None, placeholder="Select gender")
         edu_level = st.selectbox("Level of Education *", ["Senior High", "Tertiary"], index=None, placeholder="Select")
         
-        # Initialize education detail variables
         shs_level = tert_level = None
-        
         if edu_level == "Senior High":
             shs_level = st.selectbox("SHS Level *", ["Form 1", "Form 2", "Form 3"], index=None, placeholder="Select")
         elif edu_level == "Tertiary":
@@ -31,6 +29,7 @@ def detail():
         freq = st.selectbox("Seminar Frequency *", ["Monthly", "Quarterly", "Annually"], index=None, placeholder="Select", key="freq")
         contact = st.text_input("Telephone Number *", placeholder="Telephone Number")
         email = st.text_input("Email Address *", placeholder="Enter your valid email")
+        passport = st.file_uploader("Passport Photo *", type=["jpg", "jpeg", "png"], key="passport")
 
     submit = st.button("Submit Info", type="primary")
 
@@ -53,20 +52,18 @@ def detail():
             errors.append("School Name is required")
         if not freq: 
             errors.append("Seminar Frequency is required")
-        
-        # Validate contact format
         if not contact.strip():
             errors.append("Contact number is required")
         elif len(contact) != 10 or not contact.isdigit():
             errors.append("Contact number must be 10 digits")
-        
-        # Validate email format
         if not email.strip():
             errors.append("Email address is required")
         elif not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             errors.append("Invalid email format")
+        if not passport:
+            errors.append("Passport photo is required")
         
-        # Check for duplicates
+        # Check duplicates
         try:
             existing_data = pd.DataFrame(worksheet.get_all_records())
             if not existing_data.empty:
@@ -77,15 +74,12 @@ def detail():
         except Exception as e:
             errors.append(f"Error checking existing records: {str(e)}")
         
-        # Show errors or submit
         if errors:
             for error in errors:
                 st.error(error)
         else:
-            # Determine education detail
             education_detail = shs_level if edu_level == "Senior High" else tert_level
             
-            # Prepare data row
             data_row = [
                 str(datetime.now()),
                 fullname.strip(),
@@ -95,10 +89,10 @@ def detail():
                 sch_name.strip(),
                 freq,
                 contact.strip(),
-                email.strip()
+                email.strip(),
+                passport.name  # Store filename
             ]
             
-            # Append to worksheet
             worksheet.append_row(data_row)
             st.success("Submitted successfully!")
             st.balloons()

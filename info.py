@@ -16,7 +16,7 @@ def detail():
 
         fullname = st.text_input("Full Name *", placeholder="Enter your full name")
         gender = st.selectbox("Gender *", ["Male", "Female"], index=None)
-        edu_level = st.selectbox("Level of Education *", ["Senior High", "Tertiary"], index=None)
+        edu_level = st.selectbox("Level of Education *", ["Senior High", "Tertiary", "JHS"], index=None)
 
         shs_level = tert_level = None
         if edu_level == "Senior High":
@@ -26,7 +26,8 @@ def detail():
                 ["Level 100", "Level 200", "Level 300", "Level 400", 
                  "Level 500", "Level 600", "Level 700", "Final Year"],
                 index=None, key="tert11")
-
+        elif edu_level == "JHS":
+            jhs_level = st.selectbox("JHS Level *", ["Form 1", "Form 2", "Form 3"], index=None)
         sch_name = st.text_input("School Name *", placeholder="Enter your school name")
         freq = st.selectbox("Seminar Frequency *", ["Monthly", "Quarterly", "Annually"], index=None, key="freq")
         contact = st.text_input("Telephone Number *", placeholder="Telephone Number")

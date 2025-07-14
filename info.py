@@ -6,10 +6,14 @@ import gspread
 import re
 
 def detail():
-    client = cred()
-    spreadsheet = client.open("HerRising")
-    worksheet = spreadsheet.worksheet("HR")
-    st.write("Network Active!")
+    try:
+        client = cred()
+        spreadsheet = client.open("HerRising")
+        worksheet = spreadsheet.worksheet("HR")
+        st.success("✅ Connected to Google Sheet")
+    except Exception as e:
+        st.error(f"❌ Failed to connect to Google Sheet: {e}")
+        return
 
     with st.container(border=True):
         st.markdown("**Kindly fill the form below**")
@@ -18,7 +22,7 @@ def detail():
         gender = st.selectbox("Gender *", ["Male", "Female"], index=None)
         edu_level = st.selectbox("Level of Education *", ["Senior High", "Tertiary", "JHS"], index=None)
 
-        shs_level = tert_level = None
+        shs_level = tert_level = jhs_level = None
         if edu_level == "Senior High":
             shs_level = st.selectbox("SHS Level *", ["Form 1", "Form 2", "Form 3"], index=None)
         elif edu_level == "Tertiary":
@@ -28,6 +32,7 @@ def detail():
                 index=None, key="tert11")
         elif edu_level == "JHS":
             jhs_level = st.selectbox("JHS Level *", ["Form 1", "Form 2", "Form 3"], index=None)
+
         sch_name = st.text_input("School Name *", placeholder="Enter your school name")
         freq = st.selectbox("Seminar Frequency *", ["Monthly", "Quarterly", "Annually"], index=None, key="freq")
         contact = st.text_input("Telephone Number *", placeholder="Telephone Number")
@@ -49,6 +54,8 @@ def detail():
                 errors.append("SHS Level is required")
             elif edu_level == "Tertiary" and not tert_level:
                 errors.append("Tertiary Level is required")
+            elif edu_level == "JHS" and not jhs_level:
+                errors.append("JHS Level is required")
         if not sch_name.strip():
             errors.append("School Name is required")
         if not freq:
@@ -77,7 +84,12 @@ def detail():
             for error in errors:
                 st.error(error)
         else:
-            education_detail = shs_level if edu_level == "Senior High" else tert_level
+            # Safely select the correct education detail
+            education_detail = (
+                shs_level if edu_level == "Senior High"
+                else tert_level if edu_level == "Tertiary"
+                else jhs_level
+            )
 
             data_row = [
                 str(datetime.now()),
@@ -91,9 +103,13 @@ def detail():
                 email.strip()
             ]
 
-            worksheet.append_row(data_row)
-            st.success("Submitted successfully!")
-            st.balloons()
+            try:
+                safe_row = [str(item) if item is not None else "" for item in data_row]
+                worksheet.append_row(safe_row)
+                st.success("✅ Submitted successfully!")
+                st.balloons()
+            except Exception as e:
+                st.error(f"❌ Failed to submit: {e}")
 
 if __name__ == "__main__":
     detail()

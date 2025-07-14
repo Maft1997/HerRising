@@ -31,7 +31,6 @@ def detail():
         freq = st.selectbox("Seminar Frequency *", ["Monthly", "Quarterly", "Annually"], index=None, key="freq")
         contact = st.text_input("Telephone Number *", placeholder="Telephone Number")
         email = st.text_input("Email Address *", placeholder="Enter your valid email")
-        passport = st.file_uploader("Passport Photo *", type=["jpg", "jpeg", "png"], key="passport")
 
     submit = st.button("Submit Info", type="primary")
 
@@ -61,8 +60,6 @@ def detail():
             errors.append("Email address is required")
         elif not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email):
             errors.append("Invalid email format")
-        if not passport:
-            errors.append("Passport photo is required")
 
         # Check duplicates
         try:
@@ -90,8 +87,7 @@ def detail():
                 sch_name.strip(),
                 freq,
                 contact.strip(),
-                email.strip(),
-                passport.name if passport else ""
+                email.strip()
             ]
 
             worksheet.append_row(data_row)

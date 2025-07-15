@@ -35,6 +35,7 @@ def detail():
 
         sch_name = st.text_input("School Name *", placeholder="Enter your school name")
         freq = st.selectbox("Seminar Frequency *", ["Monthly", "Quarterly", "Annually"], index=None, key="freq")
+        deno = st.text_input("Denomination *", placeholder="Denomination Name")
         contact = st.text_input("Telephone Number *", placeholder="Telephone Number")
         email = st.text_input("Email Address *", placeholder="Enter your valid email")
 
@@ -58,6 +59,8 @@ def detail():
                 errors.append("JHS Level is required")
         if not sch_name.strip():
             errors.append("School Name is required")
+        if not deno.strip():
+            errors.append("Denomination Name")
         if not freq:
             errors.append("Seminar Frequency is required")
         if not contact.strip():
@@ -100,7 +103,8 @@ def detail():
                 sch_name.strip(),
                 freq,
                 contact.strip(),
-                email.strip()
+                email.strip(),
+                deno.strip()
             ]
 
             try:
